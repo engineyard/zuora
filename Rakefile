@@ -1,6 +1,6 @@
 require 'bundler'
 Bundler.setup
-require 'appraisal'
+# require 'appraisal'
 require 'rspec/core/rake_task'
 
 desc 'Default: run library specs.'

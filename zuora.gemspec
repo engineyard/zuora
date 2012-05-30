@@ -29,6 +29,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency(%q<rspec>, ["~> 2.8.0"])
   s.add_development_dependency(%q<redcarpet>, ["~> 2.1.0"])
   s.add_development_dependency(%q<factory_girl>, ["~> 2.6.4"])
-  s.add_development_dependency(%q<appraisal>, ["~> 0.4.1"])
+  # s.add_development_dependency(%q<appraisal>, ["~> 0.4.1"]) #pending bug fix
   s.add_development_dependency(%q<sqlite3>, ["~> 1.3.0"])
 end
