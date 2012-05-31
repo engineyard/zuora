@@ -153,6 +153,7 @@ module Zuora::Objects
     # dirty so that they are passed on create requests.
     def apply_default_attributes
       default_attributes.try(:[], 0).try(:each) do |key, value|
+        value = value.call if value.respond_to?(:call)
         self.send("#{key}_will_change!")
         self.send("#{key}=", value)
       end
