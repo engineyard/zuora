@@ -40,7 +40,7 @@ module Zuora::Objects
     validates_inclusion_of :price_increase_option, :in => PRICE_INCREASE_OPTIONS, :allow_nil => true
     validates_numericality_of :price_increase_percentage, :only_integer => true, :less_than_or_equal_to => 100, :greater_than_or_equal_to => -100, :allow_nil => true
     validates_inclusion_of :rev_rec_trigger_condition, :in => REV_REC_TRIGGER_CONDITIONS, :allow_nil => true
-    validates_inclusion_of :smoothing_model, :in => SMOOTHING_MODELS
+    # validates_inclusion_of :smoothing_model, :in => SMOOTHING_MODELS
     validates_numericality_of :specific_billing_period, :only_integer => true, :if => Proc.new { |prpc| prpc.billing_period == 'Specific Months' }
     validates_inclusion_of :trigger_event, :in => %w(ContractEffective ServiceActivation CustomerAcceptance SpecificDate)
     validates_inclusion_of :use_discount_specific_accounting_code, :in => [true, false], :allow_nil => true
