@@ -1,7 +1,7 @@
 module Zuora::Objects
   class Subscription < Base
     belongs_to :account
-    belongs_to :ancestor_account, :class_name => 'Account'
+    belongs_to :invoice_owner, :class_name => 'Account'
     belongs_to :creator_account, :class_name => 'Account'
     belongs_to :creator_invoice_owner, :class_name => 'Account'
     has_many :rate_plans
