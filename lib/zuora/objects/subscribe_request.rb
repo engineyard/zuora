@@ -6,14 +6,15 @@ module Zuora::Objects
     attr_accessor :payment_method
     attr_accessor :sold_to_contact
     attr_accessor :product_rate_plan
+    attr_accessor :product_rate_plan_ids
 
     store_accessors :subscribe_options
 
     validate do |request|
       request.must_have_usable(:account)
-      request.must_have_usable(:payment_method)
-      request.must_have_usable(:bill_to_contact)
-      request.must_have_usable(:product_rate_plan)
+      # request.must_have_usable(:payment_method)
+      # request.must_have_usable(:bill_to_contact)
+      # request.must_have_usable(:product_rate_plan)
       request.must_have_new(:subscription)
     end
 
@@ -49,11 +50,11 @@ module Zuora::Objects
 
           s.__send__(zns, :PaymentMethod) do |pm|
             generate_payment_method(pm)
-          end
+          end unless payment_method.nil?
 
           s.__send__(zns, :BillToContact) do |btc|
             generate_bill_to_contact(btc)
-          end
+          end unless bill_to_contact.nil?
 
           s.__send__(zns, :SoldToContact) do |btc|
             generate_sold_to_contact(btc)
@@ -64,9 +65,11 @@ module Zuora::Objects
               generate_subscription(sub)
             end
 
-            sd.__send__(zns, :RatePlanData) do |rpd|
-              rpd.__send__(zns, :RatePlan) do |rp|
-                rp.__send__(ons, :ProductRatePlanId, product_rate_plan.id)
+            product_rate_plan_ids.each do |product_rate_plan_id|
+              sd.__send__(zns, :RatePlanData) do |rpd|
+                rpd.__send__(zns, :RatePlan) do |rp|
+                  rp.__send__(ons, :ProductRatePlanId, product_rate_plan_id)
+                end
               end
             end
           end
