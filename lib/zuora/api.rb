@@ -46,6 +46,23 @@ module Zuora
       client.http.body
     end
 
+    class ErrorHandler
+      attr_accessor :error, :retry, :err_count
+      def initialize(handler)
+        @handler = handler
+        @retry = false
+        @err_count = 0
+      end
+      def retry?
+        @retry
+      end
+      def notify_error(err)
+        @error = err
+        @err_count += 1
+        @handler && @handler.call(self)
+      end
+    end
+
     # Generate an API request with the given block.  The block yields an xml
     # builder instance which can be used to build out the request as needed.
     # You can also provide the xml_body which will be used instead of the block.
@@ -55,17 +72,24 @@ module Zuora
     # @raise [Zuora::Fault]
     def request(method, xml_body=nil, &block)
       authenticate! unless authenticated?
-
-      response = client.request(method) do
-        soap.header = {'env:SessionHeader' => {'ins0:Session' => self.session.try(:key) }}
-        if block_given?
-          soap.body{|xml| yield xml }
+      error_handler = ErrorHandler.new(self.config[:error_handler])
+      begin
+        response = client.request(method) do
+          soap.header = {'env:SessionHeader' => {'ins0:Session' => self.session.try(:key) }}
+          if block_given?
+            soap.body{|xml| yield xml }
+          else
+            soap.body = xml_body
+          end
+        end
+      rescue Savon::SOAP::Fault, IOError => e
+        error_handler.notify_error(e)
+        if error_handler.retry?
+          retry
         else
-          soap.body = xml_body
+          raise Zuora::Fault.new(:message => e.message)
         end
       end
-    rescue Savon::SOAP::Fault, IOError => e
-      raise Zuora::Fault.new(:message => e.message)
     end
 
     # Attempt to authenticate against Zuora and initialize the Zuora::Session object
@@ -81,7 +105,7 @@ module Zuora
         soap.body = "<#{ns}:username>#{config.username}</#{ns}:username><#{ns}:password>#{config.password}</#{ns}:password>"
       end
       self.session = Zuora::Session.generate(response.to_hash)
-    rescue Savon::SOAP::Fault => e
+    rescue Savon::SOAP::Fault, IOError => e
       raise Zuora::Fault.new(:message => e.message)
     end
 
