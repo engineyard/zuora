@@ -4,6 +4,7 @@ module Zuora::Objects
     has_many :payment_methods
     has_many :subscriptions
     has_many :invoices
+    has_many :usages
     belongs_to :bill_to, :class_name => 'Contact'
     belongs_to :sold_to, :class_name => 'Contact'
     belongs_to :default_payment_method, :class_name => 'PaymentMethod'
