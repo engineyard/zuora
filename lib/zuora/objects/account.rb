@@ -6,6 +6,7 @@ module Zuora::Objects
     has_many :invoices
     belongs_to :bill_to, :class_name => 'Contact'
     belongs_to :sold_to, :class_name => 'Contact'
+    belongs_to :default_payment_method, :class_name => 'PaymentMethod'
 
     validates_presence_of :account_number, :name, :status, :payment_term, :batch, :currency
     validates_length_of :name, :maximum => 50
