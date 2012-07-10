@@ -59,6 +59,7 @@ module Zuora
       def notify_error(err)
         @error = err
         @err_count += 1
+        @retry = false
         @handler && @handler.call(self)
       end
     end
