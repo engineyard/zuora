@@ -1,6 +1,8 @@
 module Zuora::Objects
   class Amendment < Base
     belongs_to :subscription
+    attr_accessor :product_rate_plan_id
+    attr_accessor :rate_plan_id
 
     validates_presence_of :subscription_id, :name
     validates_length_of :name, :maximum => 100
@@ -24,5 +26,46 @@ module Zuora::Objects
       read_only :created_by_id, :created_date, :updated_by_id, :updated_date
       defaults :status => 'Draft'
     end
+
+    def create
+      return false unless valid?
+      result = Zuora::Api.instance.request(:amend) do |xml|
+        xml.__send__(zns, :requests) do |s|
+          s.__send__(zns, :Amendments) do |a|
+            to_hash.each do |k,v|
+              a.__send__(ons, k.to_s.zuora_camelize.to_sym, v) unless v.nil?
+            end
+            a.__send__(zns, :RatePlanData) do |rpd|
+              a.__send__(zns, :RatePlan) do |rp|
+                rp.__send__(ons, :ProductRatePlanId, product_rate_plan_id) if product_rate_plan_id
+                rp.__send__(ons, :AmendmentSubscriptionRatePlanId, rate_plan_id) if rate_plan_id
+              end
+            end
+          end
+        end
+      end
+      apply_response(result.to_hash, :amend_response)
+    end
+
+    def generate_rate_plan_data(builder)
+      builder.__send__(ons, :ProductRatePlanId, product_rate_plan_id)
+    end
+
+  protected
+
+    def apply_response(response_hash, type)
+      result = response_hash[type][:results]
+      puts result.inspect
+      if result[:success]
+        self.id = result[:amendment_ids]
+        @previously_changed = changes
+        @changed_attributes.clear
+        return true
+      else
+        self.errors.add(:base, result[:errors][:message])
+        return false
+      end
+    end
+
   end
 end
