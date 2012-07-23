@@ -44,7 +44,7 @@ module Zuora::Objects
           end
         end
       end
-      apply_response(result.to_hash, :amend_response)
+      apply_create_response(result.to_hash, :amend_response)
     end
 
     def generate_rate_plan_data(builder)
@@ -53,9 +53,8 @@ module Zuora::Objects
 
   protected
 
-    def apply_response(response_hash, type)
+    def apply_create_response(response_hash, type)
       result = response_hash[type][:results]
-      puts result.inspect
       if result[:success]
         self.id = result[:amendment_ids]
         @previously_changed = changes
