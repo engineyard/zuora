@@ -90,6 +90,13 @@ module Zuora
         else
           raise Zuora::Fault.new(:message => e.message)
         end
+      rescue => e
+        error_handler.notify_error(e)
+        if error_handler.retry?
+          retry
+        else
+          raise e
+        end
       end
     end
 
