@@ -73,8 +73,8 @@ module Zuora::Objects
     # locate objects using a custom where clause, currently arel
     # is not supported as it requires an actual db connection to
     # generate the sql queries. This may be overcome in the future.
-    def self.where(where)
-      keys = (attributes - unselectable_attributes).map(&:to_s).map(&:zuora_camelize)
+    def self.where(where, explicit_keys = nil)
+      keys = (explicit_keys || (attributes - unselectable_attributes)).map(&:to_s).map(&:zuora_camelize)
       if where.is_a?(Hash)
         # FIXME: improper inject usage.
         where = where.inject([]){|t,v| t << "#{v[0].to_s.zuora_camelize} = '#{v[1]}'"}.sort.join(' and ')
