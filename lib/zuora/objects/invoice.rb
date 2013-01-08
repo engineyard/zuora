@@ -28,6 +28,7 @@ module Zuora::Objects
     # validates_datetime_of     :updated_date
 
     define_attributes do
+      defer(:body)
       read_only(
         :created_by_id,
         :created_date,
