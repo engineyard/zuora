@@ -89,7 +89,7 @@ module Zuora::Objects
         @changed_attributes.clear
         return true
       else
-        self.errors.add(:base, result[:errors][:message])
+        self.apply_errors(result)
         return false
       end
     end

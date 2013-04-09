@@ -141,6 +141,20 @@ module Zuora::Objects
       self.class.connector_class.new(self)
     end
 
+    def apply_errors(result)
+      #TODO: test this code?
+      error_message = "unknown"
+      begin
+        error_message = result[:errors][:message]
+      rescue => e
+        # result[:errors] could be an array instead of a hash
+        # or result could otherwise not be compatible
+        # so just raise this...
+        raise "Got Bad result: #{result.inspect} (original error #{e.inspect})"
+      end
+      self.errors.add(:base, error_message)
+    end
+
     protected
 
     # When remote data is loaded, remove the locally cached version of the
@@ -168,7 +182,7 @@ module Zuora::Objects
         @changed_attributes.clear
         return true
       else
-        self.errors.add(:base, result[:errors][:message])
+        self.apply_errors(result)
         return false
       end
     end
