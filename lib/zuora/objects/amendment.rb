@@ -4,6 +4,8 @@ module Zuora::Objects
     attr_accessor :product_rate_plan_id
     attr_accessor :rate_plan_id
 
+    store_accessors :amend_options
+
     validates_presence_of :subscription_id, :name
     validates_length_of :name, :maximum => 100
     validates_inclusion_of :auto_renew, :in => [true, false], :allow_nil => true
@@ -42,6 +44,9 @@ module Zuora::Objects
               end
             end
           end
+          s.__send__(zns, :AmendOptions) do |ao|
+            generate_amend_options(ao)
+          end unless amend_options.blank?
         end
       end
       apply_create_response(result.to_hash, :amend_response)
@@ -49,6 +54,20 @@ module Zuora::Objects
 
     def generate_rate_plan_data(builder)
       builder.__send__(ons, :ProductRatePlanId, product_rate_plan_id)
+    end
+
+    def generate_amend_options(builder)
+      amend_options.each do |k,v|
+        if v.is_a?(Hash)
+          builder.__send__(zns, k.to_s.zuora_camelize.to_sym) do |subelem|
+            v.each do |k1, v1|
+              subelem.__send__(zns, k1.to_s.zuora_camelize.to_sym, v1)
+            end
+          end
+        else
+          builder.__send__(zns, k.to_s.zuora_camelize.to_sym, v)
+        end
+      end
     end
 
   protected
