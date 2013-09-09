@@ -13,8 +13,8 @@ module Zuora
       end
     end
 
-    def create
-      Zuora::Api.instance.request(:create) do |xml|
+    def create(use_error_handler = true)
+      Zuora::Api.instance.request(:create, nil, use_error_handler) do |xml|
         xml.__send__(zns, :zObjects, 'xsi:type' => "#{ons}:#{remote_name}") do |a|
           @model.to_hash.each do |k,v|
             a.__send__(ons, k.to_s.zuora_camelize.to_sym, v) unless v.nil?

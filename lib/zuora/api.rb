@@ -71,9 +71,9 @@ module Zuora
     # @param [String] string xml body pass to the operation
     # @yield [Builder] xml builder instance
     # @raise [Zuora::Fault]
-    def request(method, xml_body=nil, &block)
+    def request(method, xml_body=nil, use_error_handler=true, &block)
       authenticate! unless authenticated?
-      error_handler = ErrorHandler.new(self.config[:error_handler])
+      error_handler = ErrorHandler.new(use_error_handler && self.config[:error_handler])
       begin
         response = client.request(method) do
           soap.header = {'env:SessionHeader' => {'ins0:Session' => self.session.try(:key) }}

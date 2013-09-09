@@ -52,5 +52,11 @@ module Zuora::Objects
         :invoice_date => Proc.new { DateTime.new }
       )
     end
+
+    def create
+      result = self.connector.create(false)
+      apply_response(result.to_hash, :create_response)
+    end
+
   end
 end
