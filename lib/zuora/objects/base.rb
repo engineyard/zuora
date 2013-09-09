@@ -108,7 +108,7 @@ module Zuora::Objects
 
     # create the record remotely
     def create
-      result = self.connector.create
+      result = self.connector.create(false)
       apply_response(result.to_hash, :create_response)
     end
 
