@@ -47,9 +47,10 @@ module Zuora
     end
 
     class ErrorHandler
-      attr_accessor :error, :retry, :err_count
-      def initialize(handler)
+      attr_accessor :error, :method, :retry, :err_count
+      def initialize(handler, method)
         @handler = handler
+        @method = method
         @retry = false
         @err_count = 0
       end
@@ -73,7 +74,7 @@ module Zuora
     # @raise [Zuora::Fault]
     def request(method, xml_body=nil, use_error_handler=true, &block)
       authenticate! unless authenticated?
-      error_handler = ErrorHandler.new(use_error_handler && self.config[:error_handler])
+      error_handler = ErrorHandler.new(use_error_handler && self.config[:error_handler], method)
       begin
         response = client.request(method) do
           soap.header = {'env:SessionHeader' => {'ins0:Session' => self.session.try(:key) }}
