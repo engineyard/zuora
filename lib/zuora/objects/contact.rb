@@ -11,7 +11,6 @@ module Zuora::Objects
     validates_length_of :city, :maximum => 40, :allow_nil => true
     validates_length_of :state, :maximum => 40, :allow_nil => true
     validates_length_of :postal_code, :maximum => 20, :allow_nil => true
-    validates_length_of :country, :maximum => 32, :allow_nil => true
     validates_length_of :fax, :maximum => 40, :allow_nil => true
     validates_length_of :home_phone, :maximum => 40, :allow_nil => true
     validates_length_of :work_phone, :maximum => 40, :allow_nil => true
